@@ -42,13 +42,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -470,6 +476,7 @@ private fun TodayRowItem(
                     color = colors.muted,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
+                    inlineContent = rememberMetaGlyphs(muted = colors.muted, risk = colors.accentText),
                 )
             }
             CheckInPill(status = row.summary.todayStatus, onClick = onPillClick)
@@ -493,6 +500,13 @@ private fun TodayRowItem(
     }
 }
 
+/** Inline glyph ids used by [buildMetaText]; drawn by [rememberMetaGlyphs]. */
+private const val GlyphStreak = "streak"
+private const val GlyphStreakAtRisk = "streak-at-risk"
+private const val GlyphNudge = "nudge"
+private const val GlyphDone = "done"
+
+/** "(flame) 42d · (bell) 6:00 PM", with icon glyphs instead of words so it fits next to the check-in pill. */
 private fun buildMetaText(row: TodayGoalRow, use24h: Boolean, riskColor: Color): AnnotatedString {
     val stats = row.summary.stats
     val status = row.summary.todayStatus
@@ -502,22 +516,45 @@ private fun buildMetaText(row: TodayGoalRow, use24h: Boolean, riskColor: Color):
             status == DayStatus.SKIPPED -> append("skipped today")
             stats.current == 0 -> append(if (isRestDay) "no streak yet" else "start a streak today")
             else -> {
-                val streakText = "${stats.current}d streak"
+                val streakText = "${stats.current}d"
                 if (stats.atRisk) {
+                    appendInlineContent(GlyphStreakAtRisk, "streak")
                     withStyle(SpanStyle(color = riskColor)) { append(streakText) }
                 } else {
+                    appendInlineContent(GlyphStreak, "streak")
                     append(streakText)
                 }
                 when {
-                    status == DayStatus.DONE ->
-                        append(" · done ${row.doneAt?.let { Formats.time(it, use24h) } ?: "--:--"}")
+                    status == DayStatus.DONE -> {
+                        append(" · ")
+                        appendInlineContent(GlyphDone, "done")
+                        append(row.doneAt?.let { Formats.time(it, use24h) } ?: "--:--")
+                    }
                     // A rest-day goal has no nudge scheduled today, even if reminders are enabled.
-                    !isRestDay && row.summary.goal.reminder.enabled ->
-                        append(" · nudge ${Formats.time(row.summary.goal.reminder.startMinuteOfDay, use24h)}")
+                    !isRestDay && row.summary.goal.reminder.enabled -> {
+                        append(" · ")
+                        appendInlineContent(GlyphNudge, "nudge")
+                        append(Formats.time(row.summary.goal.reminder.startMinuteOfDay, use24h))
+                    }
                 }
             }
         }
     }
+}
+
+@Composable
+private fun rememberMetaGlyphs(muted: Color, risk: Color): Map<String, InlineTextContent> = remember(muted, risk) {
+    fun glyph(icon: ImageVector, tint: Color) = InlineTextContent(
+        Placeholder(width = 1.3.em, height = 1.em, placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter),
+    ) {
+        Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.fillMaxSize().padding(end = 2.dp))
+    }
+    mapOf(
+        GlyphStreak to glyph(GkIcons.Flame, muted),
+        GlyphStreakAtRisk to glyph(GkIcons.Flame, risk),
+        GlyphNudge to glyph(GkIcons.Bell, muted),
+        GlyphDone to glyph(GkIcons.Check, muted),
+    )
 }
 
 @Preview

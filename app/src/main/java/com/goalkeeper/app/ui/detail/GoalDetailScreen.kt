@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
@@ -31,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -111,6 +114,9 @@ fun GoalDetailScreen(
 
     val snackbarHostState = remember { SnackbarHostState() }
     val use24h = rememberUse24h()
+    val listState = rememberLazyListState()
+    // The header already shows the title; repeat it in the top bar only once that has scrolled away.
+    val headerScrolledAway by remember { derivedStateOf { listState.firstVisibleItemIndex > 0 } }
 
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
@@ -125,7 +131,7 @@ fun GoalDetailScreen(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             GkTopBar(
-                title = data?.goal?.title,
+                title = if (headerScrolledAway) data?.goal?.title else null,
                 onBack = onBack,
                 actions = {
                     if (data != null) {
@@ -189,6 +195,7 @@ fun GoalDetailScreen(
                     onSetItemDone = viewModel::setItemDone,
                     use24h = use24h,
                     modifier = Modifier.fillMaxSize(),
+                    listState = listState,
                 )
             }
         }
@@ -228,6 +235,7 @@ internal fun GoalDetailContent(
     onSetItemDone: (Long, Boolean) -> Unit,
     use24h: Boolean,
     modifier: Modifier = Modifier,
+    listState: LazyListState = rememberLazyListState(),
 ) {
     val haptic = LocalHapticFeedback.current
     // The Scaffold passes no bottom inset here, so clear the system navigation bar ourselves.
@@ -235,6 +243,7 @@ internal fun GoalDetailContent(
     Box(modifier = modifier) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
+            state = listState,
             contentPadding = PaddingValues(
                 start = 20.dp,
                 end = 20.dp,

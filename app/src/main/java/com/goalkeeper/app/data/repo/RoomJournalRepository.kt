@@ -34,11 +34,15 @@ class RoomJournalRepository(
     override suspend fun saveEntry(entry: JournalEntry): Long = db.withTransaction {
         val now = clock.instant()
         val cleaned = entry.copy(title = entry.title.trim(), body = entry.body.trim())
-        val id = if (cleaned.id == 0L) {
+        val stored = if (cleaned.id == 0L) null else dao.get(cleaned.id)?.entry
+        val id = if (stored == null) {
+            // New, or deleted while it was being edited: save it as a new entry rather than lose the text.
             val createdAt = if (cleaned.createdAt == Instant.EPOCH) now else cleaned.createdAt
-            dao.insertEntry(cleaned.copy(createdAt = createdAt, updatedAt = now).toEntity())
+            dao.insertEntry(cleaned.copy(id = 0, createdAt = createdAt, updatedAt = now).toEntity())
         } else {
-            dao.updateEntry(cleaned.copy(updatedAt = now).toEntity())
+            // Editors pass Instant.EPOCH when they don't know the creation time: keep the stored one.
+            val createdAt = if (cleaned.createdAt == Instant.EPOCH) Instant.ofEpochMilli(stored.createdAt) else cleaned.createdAt
+            dao.updateEntry(cleaned.copy(createdAt = createdAt, updatedAt = now).toEntity())
             cleaned.id
         }
         dao.deleteItems(id)

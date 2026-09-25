@@ -3,6 +3,7 @@ package com.goalkeeper.app.ui.editor
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -28,10 +29,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.goalkeeper.app.ui.components.GkCard
 import com.goalkeeper.app.ui.components.GkIcons
@@ -75,7 +78,7 @@ internal fun GoalInfoSection(
         )
         Spacer(Modifier.height(8.dp))
         Text(
-            text = "This shows up inside your reminder notifications, so make it something worth reading at 9pm.",
+            text = "This shows up in your reminder notifications, so make it something worth reading on a tired evening.",
             style = MaterialTheme.typography.bodySmall,
             color = GkTheme.colors.muted,
         )
@@ -127,30 +130,42 @@ private fun EditorTextField(
     )
 }
 
-/** Section 2 — icon picker: a wrapping grid of 48dp tiles (never a lazy grid inside the scrolling form). */
+/**
+ * Section 2 — icon picker: a wrapping grid of tiles (never a lazy grid inside the scrolling form). As many
+ * columns as fit at 44dp or more, with the tiles stretched so each row spans the card.
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun GoalIconSection(selected: GoalIcon, onSelect: (GoalIcon) -> Unit) {
-    GkCard {
+    GkCard(modifier = Modifier.fillMaxWidth()) {
         MonoLabel("ICON")
         Spacer(Modifier.height(14.dp))
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            GoalIcon.entries.forEach { icon ->
-                IconTile(icon = icon, selected = icon == selected, onClick = { onSelect(icon) })
+        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+            val spacing = 8.dp
+            val columns = ((maxWidth + spacing) / (44.dp + spacing)).toInt().coerceAtLeast(1)
+            // Whole pixels, rounded down, so a full row can never overflow and wrap early.
+            val tileSize = with(LocalDensity.current) {
+                ((constraints.maxWidth - spacing.roundToPx() * (columns - 1)) / columns).toDp()
+            }
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(spacing),
+                verticalArrangement = Arrangement.spacedBy(spacing),
+                maxItemsInEachRow = columns,
+            ) {
+                GoalIcon.entries.forEach { icon ->
+                    IconTile(icon = icon, selected = icon == selected, size = tileSize, onClick = { onSelect(icon) })
+                }
             }
         }
     }
 }
 
 @Composable
-private fun IconTile(icon: GoalIcon, selected: Boolean, onClick: () -> Unit) {
+private fun IconTile(icon: GoalIcon, selected: Boolean, size: Dp, onClick: () -> Unit) {
     val colors = GkTheme.colors
     Box(
         modifier = Modifier
-            .size(48.dp)
+            .size(size)
             .clip(RoundedCornerShape(14.dp))
             .background(if (selected) colors.accent else colors.raised)
             .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)

@@ -8,3 +8,6 @@
 -keepclasseswithmembers class com.goalkeeper.** {
     kotlinx.serialization.KSerializer serializer(...);
 }
+
+# Glance instantiates widget ActionCallbacks from their class name.
+-keep class * implements androidx.glance.appwidget.action.ActionCallback { <init>(); }

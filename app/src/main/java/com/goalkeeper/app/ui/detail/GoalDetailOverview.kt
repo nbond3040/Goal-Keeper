@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -135,10 +136,11 @@ private fun HeatmapCard(data: GoalDetailData, modifier: Modifier = Modifier) {
         ) {
             Text("Last 16 weeks", style = MaterialTheme.typography.titleMedium, color = colors.text)
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text("skip", style = GkTheme.mono.meta, color = colors.muted)
-                LegendSwatch(colors.accentContainer)
                 LegendSwatch(colors.accent)
                 Text("done", style = GkTheme.mono.meta, color = colors.muted)
+                Spacer(Modifier.width(6.dp))
+                LegendSwatch(colors.accentContainer)
+                Text("skip", style = GkTheme.mono.meta, color = colors.muted)
             }
         }
         Spacer(Modifier.height(14.dp))

@@ -18,8 +18,8 @@ interface JournalRepository {
 
     /**
      * Inserts ([JournalEntry.id] == 0) or updates an entry, replacing its checklist items with [JournalEntry.items]
-     * (positions are rewritten 0..n-1 in list order). Sets updatedAt to now (and createdAt for new entries when it
-     * is [java.time.Instant.EPOCH]). Returns the entry id.
+     * (positions are rewritten 0..n-1 in list order). Sets updatedAt to now. A createdAt of [java.time.Instant.EPOCH]
+     * means "unknown": now for a new entry, the stored value for an existing one. Returns the entry id.
      */
     suspend fun saveEntry(entry: JournalEntry): Long
 

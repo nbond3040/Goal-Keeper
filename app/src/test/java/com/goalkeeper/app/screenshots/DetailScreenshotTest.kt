@@ -71,7 +71,8 @@ private fun DetailSample(selectedTab: Int) {
         zone = ZoneOffset.UTC,
     )
     Column(modifier = Modifier.fillMaxSize().background(GkTheme.colors.background)) {
-        GkTopBar(title = goal.title, onBack = {}) {
+        // At the top of the screen the header shows the title, so the top bar leaves it out.
+        GkTopBar(onBack = {}) {
             GkIconButton(icon = GkIcons.Edit, contentDescription = "Edit goal", onClick = {})
             GkIconButton(icon = GkIcons.More, contentDescription = "More options", onClick = {})
         }
