@@ -22,6 +22,10 @@ import com.goalkeeper.app.ui.goals.GoalsContent
 import com.goalkeeper.app.ui.goals.buildGoalsUiState
 import com.goalkeeper.app.ui.insights.InsightsContent
 import com.goalkeeper.app.ui.insights.buildInsightsUiState
+import com.goalkeeper.app.ui.journal.GoalChipInfo
+import com.goalkeeper.app.ui.journal.JournalFeedContent
+import com.goalkeeper.app.ui.journal.JournalFeedData
+import com.goalkeeper.app.ui.journal.JournalFilter
 import com.goalkeeper.app.ui.theme.GoalKeeperTheme
 import com.goalkeeper.app.ui.today.TodayContent
 import com.goalkeeper.app.ui.today.buildTodayUiState
@@ -72,6 +76,31 @@ class ScreenScreenshotTest {
             InsightsContent(
                 state = buildInsightsUiState(SampleData.goals, SampleData.checkIns, SampleData.today),
                 onOpenGoal = {},
+            )
+        }
+    }
+
+    @Test
+    fun journal() = capture("journal") {
+        WithNav(TopLevelTab.JOURNAL) {
+            val entries = SampleData.journal.sortedByDescending { it.createdAt }
+            JournalFeedContent(
+                data = JournalFeedData(
+                    entries = entries,
+                    entryCount = entries.size,
+                    goalCount = entries.map { it.goalId }.distinct().size,
+                    goalChips = SampleData.goals.associate { it.id to GoalChipInfo(it.id, it.icon, it.title) },
+                    zone = ZoneOffset.UTC,
+                    today = SampleData.today,
+                ),
+                filter = JournalFilter.ALL,
+                onSelectFilter = {},
+                onOpenEntry = { _, _, _ -> },
+                onOpenGoal = {},
+                onTogglePin = {},
+                onDeleteEntry = {},
+                onSetItemDone = { _, _ -> },
+                use24h = false,
             )
         }
     }

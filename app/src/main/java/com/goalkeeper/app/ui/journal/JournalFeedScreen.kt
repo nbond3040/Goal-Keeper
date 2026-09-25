@@ -68,7 +68,7 @@ fun JournalFeedScreen(
 }
 
 @Composable
-private fun JournalFeedContent(
+internal fun JournalFeedContent(
     data: JournalFeedData?,
     filter: JournalFilter,
     onSelectFilter: (JournalFilter) -> Unit,

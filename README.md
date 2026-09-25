@@ -42,8 +42,8 @@ them on every push).
 | --- | --- | --- |
 | ![Goals](docs/screenshots/goals.png) | ![Insights](docs/screenshots/insights.png) | ![Light](docs/screenshots/today_light_ember.png) |
 
-All colorways: [docs/screenshots/colorways.png](docs/screenshots/colorways.png). Goal editor:
-[docs/screenshots/editor.png](docs/screenshots/editor.png).
+Full-length views: [goal detail](docs/screenshots/detail_full.png), [a goal's journal](docs/screenshots/goal_journal_full.png)
+and the [goal editor](docs/screenshots/editor.png). All colorways: [colorways.png](docs/screenshots/colorways.png).
 
 ## Install
 

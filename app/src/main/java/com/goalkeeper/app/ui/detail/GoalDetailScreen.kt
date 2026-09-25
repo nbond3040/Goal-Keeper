@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -208,7 +210,7 @@ fun GoalDetailScreen(
 }
 
 @Composable
-private fun GoalDetailContent(
+internal fun GoalDetailContent(
     data: GoalDetailData,
     selectedTab: Int,
     onSelectTab: (Int) -> Unit,
@@ -228,6 +230,8 @@ private fun GoalDetailContent(
     modifier: Modifier = Modifier,
 ) {
     val haptic = LocalHapticFeedback.current
+    // The Scaffold passes no bottom inset here, so clear the system navigation bar ourselves.
+    val navBarBottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     Box(modifier = modifier) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
@@ -235,7 +239,7 @@ private fun GoalDetailContent(
                 start = 20.dp,
                 end = 20.dp,
                 top = 6.dp,
-                bottom = if (selectedTab == 1) 104.dp else 28.dp,
+                bottom = navBarBottom + if (selectedTab == 1) 104.dp else 28.dp,
             ),
             verticalArrangement = Arrangement.spacedBy(18.dp),
         ) {

@@ -181,8 +181,8 @@ private fun MonthCalendarCard(data: GoalDetailData, onToggleDay: (LocalDate) -> 
                 GkIconButton(
                     icon = GkIcons.ChevronRight,
                     contentDescription = "Next month",
-                    onClick = { if (canGoNext) displayedMonthEpoch = displayedMonth.plusMonths(1).toEpochDay() },
-                    tint = if (canGoNext) colors.text else colors.subtle,
+                    onClick = { displayedMonthEpoch = displayedMonth.plusMonths(1).toEpochDay() },
+                    enabled = canGoNext,
                 )
             }
         }
@@ -240,11 +240,12 @@ private fun DayCell(date: LocalDate, data: GoalDetailData, onToggleDay: (LocalDa
         else -> colors.subtle
     }
 
+    // Clip before clickable so the ripple stays round.
     var cellModifier = modifier
         .fillMaxSize()
-        .then(if (!isFuture) Modifier.clickable { onToggleDay(date) } else Modifier)
         .padding(2.dp)
         .clip(shape)
+        .then(if (!isFuture) Modifier.clickable { onToggleDay(date) } else Modifier)
         .background(background)
     if (status == DayStatus.SKIPPED) cellModifier = cellModifier.border(1.5.dp, colors.border, shape)
     if (status == DayStatus.PENDING) cellModifier = cellModifier.border(2.dp, colors.accent, shape)

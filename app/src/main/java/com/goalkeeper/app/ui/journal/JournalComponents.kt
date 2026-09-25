@@ -64,13 +64,13 @@ internal fun JournalFilter.accepts(entry: JournalEntry): Boolean = when (this) {
 }
 
 /** What the journal feed needs to render a tappable goal chip on an entry card. */
-internal data class GoalChipInfo(val goalId: Long, val icon: GoalIcon, val title: String)
+data class GoalChipInfo(val goalId: Long, val icon: GoalIcon, val title: String)
 
 /** One row of a rendered journal timeline: a section header or an entry. */
 internal sealed interface JournalRow {
     data object PinnedHeader : JournalRow
 
-    data class DayHeader(val label: String, val isToday: Boolean) : JournalRow
+    data class DayHeader(val date: LocalDate, val label: String, val isToday: Boolean) : JournalRow
 
     /** [emphasized] is true for entries under the "Today" header (accent-tinted dot). */
     data class EntryRow(val entry: JournalEntry, val emphasized: Boolean) : JournalRow
@@ -101,9 +101,10 @@ internal fun buildJournalRows(entries: List<JournalEntry>, today: LocalDate, zon
             val label = when {
                 isToday -> "TODAY"
                 day == today.minusDays(1) -> "YESTERDAY"
+                day.year != today.year -> "${Formats.monoDate(day)} ${day.year}"
                 else -> Formats.monoDate(day)
             }
-            rows += JournalRow.DayHeader(label, isToday)
+            rows += JournalRow.DayHeader(day, label, isToday)
             lastDay = day
             lastIsToday = isToday
         }
@@ -114,7 +115,8 @@ internal fun buildJournalRows(entries: List<JournalEntry>, today: LocalDate, zon
 
 private fun JournalRow.rowKey(): Any = when (this) {
     JournalRow.PinnedHeader -> "pinned-header"
-    is JournalRow.DayHeader -> "day-$label"
+    // By date, not label: "FRI · 25 SEP" recurs in other years and keys must be unique.
+    is JournalRow.DayHeader -> "day-${date.toEpochDay()}"
     is JournalRow.EntryRow -> "entry-${entry.id}"
 }
 

@@ -112,6 +112,8 @@ class GoalEditorViewModel(
                     return@launch
                 }
                 loadedGoal = goal
+                // A count that differs from the tier default was chosen by hand earlier: keep it on tier changes.
+                nudgeManuallyChanged = goal.reminder.nudgeCount != goal.importance.defaultNudges
                 val loaded = GoalEditorUiState(
                     loading = false,
                     isNew = false,

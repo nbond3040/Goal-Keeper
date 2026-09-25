@@ -405,13 +405,15 @@ fun GkIconButton(
     tint: Color = GkTheme.colors.text,
     container: Color = Color.Transparent,
     border: BorderStroke? = null,
+    enabled: Boolean = true,
 ) {
     Surface(
         onClick = onClick,
         modifier = modifier.size(44.dp),
+        enabled = enabled,
         shape = CircleShape,
         color = container,
-        contentColor = tint,
+        contentColor = if (enabled) tint else GkTheme.colors.subtle.copy(alpha = 0.5f),
         border = border,
     ) {
         Box(contentAlignment = Alignment.Center) {

@@ -92,44 +92,13 @@ class GoalDetailViewModel(
         if (goal == null) {
             GoalDetailUiState.NotFound
         } else {
-            GoalDetailUiState.Ready(buildData(goal, checkIns, entries, entryCount, today))
+            GoalDetailUiState.Ready(
+                buildGoalDetailData(goal, checkIns, entries, entryCount, today, clock.now().toLocalTime(), clock.zone()),
+            )
         }
     }
         .flowOn(Dispatchers.Default)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), GoalDetailUiState.Loading)
-
-    private fun buildData(
-        goal: Goal,
-        checkIns: List<CheckIn>,
-        entries: List<JournalEntry>,
-        entryCount: Int,
-        today: LocalDate,
-    ): GoalDetailData {
-        val stats = StreakCalculator.stats(goal, checkIns, today)
-        val checkInsByDate = checkIns.associate { it.date to it.status }
-
-        val thisMonday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-        val heatmapFrom = thisMonday.minusWeeks(15)
-        val heatmapTo = thisMonday.plusDays(6)
-        val heatmapStatuses = StreakCalculator.dayStatuses(goal, checkIns, heatmapFrom, heatmapTo, today).map { it.second }
-        val monthLabels = (0 until 16)
-            .map { week -> heatmapFrom.plusWeeks(week.toLong()).month.getDisplayName(TextStyle.SHORT, Locale.getDefault()).uppercase() }
-            .distinctConsecutive()
-
-        return GoalDetailData(
-            goal = goal,
-            stats = stats,
-            today = today,
-            nowTime = clock.now().toLocalTime(),
-            zone = clock.zone(),
-            checkIns = checkIns,
-            checkInsByDate = checkInsByDate,
-            heatmapStatuses = heatmapStatuses,
-            heatmapMonthLabels = monthLabels,
-            entries = entries,
-            entryCount = entryCount,
-        )
-    }
 
     /** Sets or clears today's check-in. A milestone snackbar fires only when marking DONE lands on one. */
     fun checkIn(status: CheckInStatus?) {
@@ -201,6 +170,42 @@ class GoalDetailViewModel(
         val without = data.checkIns.filterNot { it.date == date }
         return without + CheckIn(goalId = data.goal.id, date = date, status = status, createdAt = clock.instant())
     }
+}
+
+/** Pure reduction into the detail screen's data (shared by [GoalDetailViewModel] and screenshot tests). */
+internal fun buildGoalDetailData(
+    goal: Goal,
+    checkIns: List<CheckIn>,
+    entries: List<JournalEntry>,
+    entryCount: Int,
+    today: LocalDate,
+    nowTime: LocalTime,
+    zone: ZoneId,
+): GoalDetailData {
+    val stats = StreakCalculator.stats(goal, checkIns, today)
+    val checkInsByDate = checkIns.associate { it.date to it.status }
+
+    val thisMonday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+    val heatmapFrom = thisMonday.minusWeeks(15)
+    val heatmapTo = thisMonday.plusDays(6)
+    val heatmapStatuses = StreakCalculator.dayStatuses(goal, checkIns, heatmapFrom, heatmapTo, today).map { it.second }
+    val monthLabels = (0 until 16)
+        .map { week -> heatmapFrom.plusWeeks(week.toLong()).month.getDisplayName(TextStyle.SHORT, Locale.getDefault()).uppercase() }
+        .distinctConsecutive()
+
+    return GoalDetailData(
+        goal = goal,
+        stats = stats,
+        today = today,
+        nowTime = nowTime,
+        zone = zone,
+        checkIns = checkIns,
+        checkInsByDate = checkInsByDate,
+        heatmapStatuses = heatmapStatuses,
+        heatmapMonthLabels = monthLabels,
+        entries = entries,
+        entryCount = entryCount,
+    )
 }
 
 private fun List<String>.distinctConsecutive(): List<String> {
