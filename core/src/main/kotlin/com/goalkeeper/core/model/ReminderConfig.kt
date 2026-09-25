@@ -13,7 +13,8 @@ data class ReminderConfig(
     val nudgeCount: Int = 1,
     val intervalMinutes: Int = 60,
 ) {
-    val startTime: LocalTime get() = LocalTime.of((startMinuteOfDay / 60).coerceIn(0, 23), startMinuteOfDay % 60)
+    val startTime: LocalTime
+        get() = normalized().startMinuteOfDay.let { LocalTime.of(it / 60, it % 60) }
 
     /** Clamps every field into its supported range. */
     fun normalized(): ReminderConfig = copy(

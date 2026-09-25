@@ -22,7 +22,11 @@ data class Schedule(val mask: Int) {
 
     val daysPerWeek: Int get() = Integer.bitCount(effectiveMask)
 
-    fun toggle(day: DayOfWeek): Schedule = Schedule(effectiveMask xor bit(day))
+    /** Adds or removes [day]. Removing the only remaining day is ignored: a schedule is never empty. */
+    fun toggle(day: DayOfWeek): Schedule {
+        val next = effectiveMask xor bit(day)
+        return if (next == 0) this else Schedule(next)
+    }
 
     companion object {
         const val ALL_DAYS_MASK = 0x7F

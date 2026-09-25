@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Notification channels -->
+    <string name="notif_channel_important_name">Important goal nudges</string>
+    <string name="notif_channel_important_desc">Frequent reminders for your highest-priority goals</string>
+    <string name="notif_channel_nudges_name">Goal nudges</string>
+    <string name="notif_channel_nudges_desc">Reminders to check in on your goals</string>
+    <string name="notif_channel_briefing_name">Morning briefing</string>
+    <string name="notif_channel_briefing_desc">A daily summary of what is scheduled today</string>
+
+    <!-- Notification content -->
+    <string name="notif_action_done">Done</string>
+    <string name="notif_last_call">Last call</string>
+</resources>

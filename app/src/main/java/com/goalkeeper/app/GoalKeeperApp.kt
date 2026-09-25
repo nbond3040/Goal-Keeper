@@ -3,6 +3,7 @@ package com.goalkeeper.app
 import android.app.Application
 import android.content.Context
 import com.goalkeeper.app.di.AppContainer
+import com.goalkeeper.app.widget.TodayWidgetUpdater
 import kotlinx.coroutines.launch
 
 class GoalKeeperApp : Application() {
@@ -15,6 +16,7 @@ class GoalKeeperApp : Application() {
         container.notificationHelper.createChannels()
         // Alarms are wiped by force-stop and some OEM task killers; re-arm on every process start.
         container.applicationScope.launch { container.reminderScheduler.syncAll() }
+        TodayWidgetUpdater.start(this, container)
     }
 }
 

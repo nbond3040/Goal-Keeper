@@ -1,6 +1,7 @@
 package com.goalkeeper.app.di
 
 import android.content.Context
+import android.util.Log
 import com.goalkeeper.app.data.backup.BackupManager
 import com.goalkeeper.app.data.db.GoalKeeperDatabase
 import com.goalkeeper.app.data.repo.GoalRepository
@@ -12,6 +13,7 @@ import com.goalkeeper.app.data.settings.SettingsRepository
 import com.goalkeeper.app.notifications.NotificationHelper
 import com.goalkeeper.app.notifications.ReminderScheduler
 import com.goalkeeper.app.util.AppClock
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -20,8 +22,15 @@ import kotlinx.coroutines.SupervisorJob
 class AppContainer(context: Context) {
     private val appContext = context.applicationContext
 
-    /** For work that must outlive a screen (e.g. re-arming alarms). */
-    val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    /**
+     * For work that must outlive a screen (re-arming alarms, notification actions, widget refreshes).
+     * Failures there are logged rather than crashing the app from a background receiver.
+     */
+    val applicationScope = CoroutineScope(
+        SupervisorJob() + Dispatchers.Default + CoroutineExceptionHandler { _, error ->
+            Log.w("GoalKeeper", "Background task failed", error)
+        },
+    )
 
     val clock = AppClock()
 
