@@ -43,8 +43,9 @@ them on every push).
 | ![Goals](docs/screenshots/goals.png) | ![Insights](docs/screenshots/insights.png) | ![Light](docs/screenshots/today_light_ember.png) |
 
 More screens: [goal detail, full length](docs/screenshots/detail_full.png),
-[a goal's journal](docs/screenshots/goal_journal_full.png), [goal editor](docs/screenshots/editor.png),
-[Rank](docs/screenshots/rank.png) and [Settings](docs/screenshots/settings_full.png).
+[a goal's journal](docs/screenshots/goal_journal_full.png), [journal editors](docs/screenshots/journal_editors.png),
+[goal editor](docs/screenshots/editor.png), [Rank](docs/screenshots/rank.png) and
+[Settings](docs/screenshots/settings_full.png).
 All colorways: [colorways.png](docs/screenshots/colorways.png).
 
 ## Install

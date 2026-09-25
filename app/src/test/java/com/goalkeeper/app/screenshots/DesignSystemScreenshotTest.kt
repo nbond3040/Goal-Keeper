@@ -48,7 +48,7 @@ class DesignSystemScreenshotTest {
             "../docs/screenshots/colorways.png",
             RoborazziOptions(),
             // Positional (widthDp, heightDp): parameter names aren't part of the verified API surface.
-            RoborazziComposeOptions { size(760, 952) },
+            RoborazziComposeOptions { size(760, 944) },
         ) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.weight(1f)) {

@@ -4,10 +4,12 @@ import android.app.Application
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -22,6 +24,9 @@ import com.goalkeeper.app.ui.components.GkTopBar
 import com.goalkeeper.app.ui.goals.GoalRowEntry
 import com.goalkeeper.app.ui.goals.RankList
 import com.goalkeeper.app.ui.goals.TierHeaderEntry
+import com.goalkeeper.app.ui.journal.ChecklistDraftItem
+import com.goalkeeper.app.ui.journal.ChecklistFields
+import com.goalkeeper.app.ui.journal.EntryFields
 import com.goalkeeper.app.ui.settings.AboutSection
 import com.goalkeeper.app.ui.settings.AppearanceSection
 import com.goalkeeper.app.ui.settings.BackupSection
@@ -29,12 +34,13 @@ import com.goalkeeper.app.ui.settings.ReminderSettingsSection
 import com.goalkeeper.app.ui.theme.GkTheme
 import com.goalkeeper.app.ui.theme.GoalKeeperTheme
 import com.goalkeeper.core.model.Importance
+import com.goalkeeper.core.model.Mood
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
-/** Secondary screens: the Rank screen, and the settings sections stacked on a canvas tall enough for all of them. */
+/** Secondary screens: Rank, the journal editors side by side, and the settings sections on a tall canvas. */
 @OptIn(ExperimentalRoborazziApi::class)
 @RunWith(AndroidJUnit4::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -60,6 +66,47 @@ class SecondaryScreensScreenshotTest {
                         onMoveDown = {},
                         modifier = Modifier.fillMaxSize(),
                     )
+                }
+            }
+        }
+    }
+
+    @Test
+    fun journalEditors() {
+        captureRoboImage(
+            "../docs/screenshots/journal_editors.png",
+            RoborazziOptions(),
+            RoborazziComposeOptions { size(822, 891) },
+        ) {
+            GoalKeeperTheme(darkTheme = true) {
+                Row(modifier = Modifier.fillMaxSize().background(GkTheme.colors.background)) {
+                    EditorPane(title = "Edit task list", modifier = Modifier.weight(1f)) {
+                        ChecklistFields(
+                            title = "Race prep",
+                            items = listOf(
+                                ChecklistDraftItem(1, "Register for the October 10K", done = true),
+                                ChecklistDraftItem(2, "Buy new trainers", done = true),
+                                ChecklistDraftItem(3, "Build up to a 10-mile long run", done = false),
+                                ChecklistDraftItem(4, "Book a physio check on the knee", done = false),
+                            ),
+                            newItemText = "",
+                            onTitleChange = {},
+                            onNewItemTextChange = {},
+                            onCommitNewItem = {},
+                            onItemTextChange = { _, _ -> },
+                            onItemDoneChange = { _, _ -> },
+                            onRemoveItem = {},
+                            onMoveItem = { _, _ -> },
+                        )
+                    }
+                    EditorPane(title = "New log entry", modifier = Modifier.weight(1f)) {
+                        EntryFields(
+                            mood = Mood.STRONG,
+                            body = "Heavy legs for the first two miles, then negative-split the last three.",
+                            onMoodTap = {},
+                            onBodyChange = {},
+                        )
+                    }
                 }
             }
         }
@@ -105,5 +152,16 @@ class SecondaryScreensScreenshotTest {
                 }
             }
         }
+    }
+}
+
+/** A journal editor as its screen lays it out: top bar, then the fields with the screen's padding. */
+@Composable
+private fun EditorPane(title: String, modifier: Modifier, content: @Composable () -> Unit) {
+    Column(modifier = modifier) {
+        GkTopBar(title = title, subtitle = SampleData.run.title, onBack = {}) {
+            TextButton(onClick = {}) { Text("Save", color = GkTheme.colors.accentText) }
+        }
+        Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)) { content() }
     }
 }
