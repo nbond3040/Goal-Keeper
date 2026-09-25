@@ -24,8 +24,26 @@ Navy, Glacier Teal, Ember Orange, Crimson, Emerald, Royal Violet and Graphite), 
 - **Journal per goal**: quick log entries (with an optional mood), notes, and task lists with checkboxes, shown as a
   timeline with filters and pinning. A global Journal tab shows everything across goals.
 - **Insights**: consistency heatmap across all goals, weekly check-ins, best weekdays, streak leaderboard.
+- **Home-screen widget**: "Today's goals" shows your priority queue and streaks, with one-tap check-in right from
+  the home screen.
 - **Your data stays yours**: everything is stored on the device (Room database). Android's own backup covers the app,
   and Settings can export/import a JSON backup file.
+
+## Screenshots
+
+Rendered from the real Compose screens by the screenshot tests (`./gradlew :app:recordRoborazziDebug`; CI refreshes
+them on every push).
+
+| Today | Goal detail | Journal |
+| --- | --- | --- |
+| ![Today](docs/screenshots/today.png) | ![Goal detail](docs/screenshots/detail.png) | ![Journal](docs/screenshots/journal.png) |
+
+| Goals | Insights | Light mode, Ember Orange |
+| --- | --- | --- |
+| ![Goals](docs/screenshots/goals.png) | ![Insights](docs/screenshots/insights.png) | ![Light](docs/screenshots/today_light_ember.png) |
+
+All colorways: [docs/screenshots/colorways.png](docs/screenshots/colorways.png). Goal editor:
+[docs/screenshots/editor.png](docs/screenshots/editor.png).
 
 ## Install
 
@@ -65,6 +83,7 @@ app/    Android app: Jetpack Compose UI, Room database, DataStore settings, Alar
 - `app/.../notifications/`: alarm scheduling, receivers (nudge, "Done" action, reboot/time-change re-arming).
 - `app/.../data/`: Room entities/DAOs, repositories, settings, backup.
 - `app/.../ui/`: theme (colorways, typography), shared components, and one package per screen.
+- `app/.../widget/`: the Glance home-screen widget.
 
 Tech: Kotlin 2.2, Jetpack Compose (Material 3), Navigation (type-safe routes), Room, DataStore,
 kotlinx.serialization, AlarmManager; min SDK 26, target SDK 36.
