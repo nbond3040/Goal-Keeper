@@ -235,10 +235,11 @@ private fun ChecklistEditRow(
         )
         StyledTextField(
             value = item.text,
-            onValueChange = onTextChange,
+            // Long tasks wrap instead of scrolling sideways, but a task stays one paragraph.
+            onValueChange = { onTextChange(it.replace('\n', ' ')) },
             placeholder = "Task",
             modifier = Modifier.weight(1f),
-            singleLine = true,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             textColor = if (item.done) colors.muted else colors.text,
             textStyle = MaterialTheme.typography.bodyMedium.copy(
                 textDecoration = if (item.done) TextDecoration.LineThrough else null,
@@ -264,7 +265,7 @@ private fun ChecklistEditRow(
                 )
             }
         }
-        GkIconButton(icon = GkIcons.Delete, contentDescription = "Delete task", onClick = onDelete, tint = colors.danger)
+        GkIconButton(icon = GkIcons.Delete, contentDescription = "Delete task", onClick = onDelete, tint = colors.muted)
     }
 }
 

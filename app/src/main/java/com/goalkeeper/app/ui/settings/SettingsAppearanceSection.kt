@@ -118,7 +118,9 @@ private fun ColorwayTile(
             text = colorway.displayName,
             style = MaterialTheme.typography.labelMedium,
             color = colors.text,
-            maxLines = 1,
+            // Two lines for every tile, so "Midnight Navy" wraps instead of truncating and the tiles stay level.
+            minLines = 2,
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,
         )
