@@ -143,7 +143,7 @@ fun RankScreen(
 }
 
 @Composable
-private fun RankList(
+internal fun RankList(
     entries: List<RankEntry>,
     onMove: (Int, Int) -> Unit,
     onSetTier: (Long, Importance) -> Unit,

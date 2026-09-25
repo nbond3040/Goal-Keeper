@@ -21,7 +21,7 @@ import com.goalkeeper.app.ui.theme.GkTheme
 @Composable
 internal fun BackupSection(onExport: () -> Unit, onImportSelected: () -> Unit) {
     val colors = GkTheme.colors
-    GkCard {
+    GkCard(modifier = Modifier.fillMaxWidth()) {
         MonoLabel("BACKUP")
         Spacer(Modifier.height(10.dp))
         Text(
@@ -51,7 +51,7 @@ internal fun BackupSection(onExport: () -> Unit, onImportSelected: () -> Unit) {
 @Composable
 internal fun AboutSection() {
     val colors = GkTheme.colors
-    GkCard {
+    GkCard(modifier = Modifier.fillMaxWidth()) {
         MonoLabel("ABOUT")
         Spacer(Modifier.height(14.dp))
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {

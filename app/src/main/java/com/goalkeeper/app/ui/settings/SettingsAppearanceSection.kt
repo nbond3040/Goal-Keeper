@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -46,7 +47,7 @@ internal fun AppearanceSection(
     onThemeModeSelected: (ThemeMode) -> Unit,
 ) {
     val dark = resolveDarkTheme(themeMode)
-    GkCard {
+    GkCard(modifier = Modifier.fillMaxWidth()) {
         MonoLabel("APPEARANCE")
         Spacer(Modifier.height(14.dp))
         Column(modifier = Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(10.dp)) {

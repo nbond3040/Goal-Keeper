@@ -22,3 +22,7 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(kotlin("test-junit"))
 }
+
+tasks.test {
+    testLogging { events("passed", "skipped", "failed") }
+}

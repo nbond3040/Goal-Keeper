@@ -60,7 +60,7 @@ internal fun ReminderSettingsSection(
     var editingDefaultTime by remember { mutableStateOf(false) }
     var editingBriefingTime by remember { mutableStateOf(false) }
 
-    GkCard {
+    GkCard(modifier = Modifier.fillMaxWidth()) {
         MonoLabel("REMINDERS")
         Spacer(Modifier.height(14.dp))
 

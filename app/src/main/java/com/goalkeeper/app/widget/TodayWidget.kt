@@ -73,7 +73,7 @@ class TodayWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
             val state by remember { widgetStateFlow(context) }.collectAsState(
-                initial = WidgetUiState(colors = gkColors(Colorway.BOLD_BLUE, dark = true)),
+                initial = WidgetUiState(colors = gkColors(Colorway.BOLD_BLUE, dark = true), loaded = false),
             )
             WidgetContent(context = context, state = state)
         }
@@ -86,6 +86,8 @@ private data class WidgetUiState(
     /** Actionable-today goals, in ranked order (mirrors [GoalRepository.observeActiveGoals]). */
     val actionable: List<GoalSummary> = emptyList(),
     val hasAnyActiveGoals: Boolean = false,
+    /** False only for the placeholder frame before the first database read, so it never claims "No goals yet". */
+    val loaded: Boolean = true,
 )
 
 /** Combines the same sources [TodayWidgetUpdater] watches into what one widget frame needs to draw. */
@@ -132,6 +134,8 @@ private fun WidgetContent(context: Context, state: WidgetUiState) {
         Spacer(modifier = GlanceModifier.height(10.dp))
 
         when {
+            !state.loaded -> Unit
+
             !state.hasAnyActiveGoals -> EmptyPanel(
                 context = context,
                 colors = colors,

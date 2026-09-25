@@ -62,6 +62,7 @@ android {
             isReturnDefaultValues = true
             // Robolectric screenshot tests need merged resources (fonts, drawables).
             isIncludeAndroidResources = true
+            all { test -> test.testLogging { events("passed", "skipped", "failed") } }
         }
     }
 }
